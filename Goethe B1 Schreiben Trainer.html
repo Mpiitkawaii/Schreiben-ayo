@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goethe B1 Schreiben Trainer</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+
+    <!-- Navigation Bar -->
+    <header class="bg-indigo-900 text-white shadow-md sticky top-0 z-30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-amber-400 text-indigo-950 font-bold px-2.5 py-1 rounded text-sm tracking-wider">
+                    B1 GOETHE
+                </div>
+                <h1 class="text-lg sm:text-xl font-bold tracking-tight">Schreiben Trainer</h1>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="flex items-center space-x-2 sm:space-x-4">
+                <button onclick="togglePracticeMode()" class="text-xs sm:text-sm bg-amber-500 hover:bg-amber-600 text-indigo-950 font-semibold px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 shadow-sm">
+                    <i class="fa-solid fa-gamepad"></i>
+                    <span>Quiz Interaktif</span>
+                </button>
+                <button onclick="toggleRedemittelModal()" class="text-xs sm:text-sm bg-indigo-800 hover:bg-indigo-700 text-indigo-100 px-3 py-1.5 rounded-lg border border-indigo-600 transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-book-bookmark text-amber-300"></i>
+                    <span class="hidden sm:inline">B1 Redemittel</span>
+                </button>
+                <button onclick="resetEditor()" class="text-xs sm:text-sm bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-lg transition flex items-center gap-1">
+                    <i class="fa-solid fa-rotate"></i>
+                    <span class="hidden sm:inline">Reset</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Left Column: Task & Writing Area (7 Cols) -->
+        <section class="lg:col-span-7 flex flex-col space-y-5">
+            
+            <!-- Mode Toggle: Writing vs Interactive Quiz -->
+            <div id="quiz-banner" class="hidden bg-gradient-to-r from-amber-500 to-amber-600 text-indigo-950 p-3 rounded-xl shadow-sm font-medium text-xs sm:text-sm flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-lightbulb text-indigo-950 text-base"></i>
+                    <span><strong>Mode Quiz:</strong> Tes pemahaman Redemittel B1 Anda dengan latihan cepat!</span>
+                </div>
+                <button onclick="togglePracticeMode()" class="bg-indigo-950 text-white text-xs px-2.5 py-1 rounded-md hover:bg-indigo-900 transition">
+                    Kembali ke Schreiben
+                </button>
+            </div>
+
+            <!-- Teil Tabs -->
+            <div id="teil-tabs-container" class="bg-white p-1.5 rounded-xl shadow-sm border border-slate-200 flex space-x-1">
+                <button id="tab-teil1" onclick="switchTeil(1)" class="flex-1 py-2 px-3 rounded-lg font-medium text-xs sm:text-sm transition flex justify-center items-center gap-2 bg-indigo-600 text-white shadow-sm">
+                    <span>Teil 1</span>
+                    <span class="text-[10px] opacity-80 bg-black/20 px-1.5 py-0.5 rounded">~80 Wör.</span>
+                </button>
+                <button id="tab-teil2" onclick="switchTeil(2)" class="flex-1 py-2 px-3 rounded-lg font-medium text-xs sm:text-sm transition flex justify-center items-center gap-2 text-slate-600 hover:bg-slate-100">
+                    <span>Teil 2</span>
+                    <span class="text-[10px] opacity-80 bg-slate-200 px-1.5 py-0.5 rounded text-slate-700">~80 Wör.</span>
+                </button>
+                <button id="tab-teil3" onclick="switchTeil(3)" class="flex-1 py-2 px-3 rounded-lg font-medium text-xs sm:text-sm transition flex justify-center items-center gap-2 text-slate-600 hover:bg-slate-100">
+                    <span>Teil 3</span>
+                    <span class="text-[10px] opacity-80 bg-slate-200 px-1.5 py-0.5 rounded text-slate-700">~30 Wör.</span>
+                </button>
+            </div>
+
+            <!-- Task Prompt Box -->
+            <div id="task-card" class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div class="flex items-center space-x-2">
+                        <span id="teil-badge" class="bg-indigo-100 text-indigo-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
+                            Teil 1: Informelle E-Mail
+                        </span>
+                        <span id="time-recommendation" class="text-xs text-slate-500 font-medium">
+                            <i class="fa-regular fa-clock mr-1"></i>20 Min.
+                        </span>
+                    </div>
+                    
+                    <!-- Task Selector Dropdown -->
+                    <div class="flex items-center space-x-2">
+                        <select id="task-select" onchange="loadSelectedTask()" class="text-xs bg-slate-50 border border-slate-300 text-slate-700 rounded-lg p-1.5 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                            <!-- Populated dynamically -->
+                        </select>
+                        <button onclick="generateCustomTask()" title="Buat Soal Baru AI" class="text-xs bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-300 px-2 py-1.5 rounded-lg transition flex items-center gap-1">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            <span class="hidden sm:inline">Soal AI</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Prompt Content -->
+                <div id="task-prompt-content" class="text-sm text-slate-700 leading-relaxed space-y-3">
+                    <!-- Dynamic prompt populated by JS -->
+                </div>
+
+                <!-- Points Checklist -->
+                <div id="task-points-container" class="bg-slate-50 p-3 rounded-lg border border-slate-200 text-xs space-y-1.5">
+                    <div class="font-semibold text-slate-600 mb-1">Poin yang Wajib Ditulis (Leitpunkte):</div>
+                    <ul id="task-points-list" class="space-y-1 text-slate-700 pl-1">
+                        <!-- Points populated by JS -->
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Quick Demo Auto-Fill Section (Langsung Coba) -->
+            <div id="quick-demo-box" class="bg-indigo-50 border border-indigo-100 rounded-xl p-3 flex flex-wrap items-center justify-between gap-2 text-xs">
+                <span class="font-semibold text-indigo-900 flex items-center gap-1">
+                    <i class="fa-solid fa-bolt text-amber-500"></i> Uji Coba Cepat (Tanpa Ketik):
+                </span>
+                <div class="flex items-center gap-2">
+                    <button onclick="loadDemoText('draft')" class="bg-white hover:bg-slate-50 text-indigo-800 border border-indigo-200 px-3 py-1.5 rounded-lg transition font-medium shadow-sm">
+                        <i class="fa-solid fa-file-pen text-rose-500 mr-1"></i> Teks Berkesalahan (Tes Koreksi)
+                    </button>
+                    <button onclick="loadDemoText('perfect')" class="bg-white hover:bg-slate-50 text-emerald-800 border border-emerald-200 px-3 py-1.5 rounded-lg transition font-medium shadow-sm">
+                        <i class="fa-solid fa-circle-check text-emerald-600 mr-1"></i> Teks Bagus (Skor Tinggi)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Textarea Editor / Quiz Card Container -->
+            <div id="editor-card" class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 space-y-3 flex-grow flex flex-col">
+                <!-- Editor Toolbar -->
+                <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                    <div class="flex items-center space-x-3 text-xs">
+                        <span class="font-semibold text-slate-600">Lembar Jawaban</span>
+                        <span id="word-count-badge" class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded font-mono font-medium">
+                            0 kata
+                        </span>
+                        <span id="target-word-info" class="text-slate-400">
+                            (Target: ~80 kata)
+                        </span>
+                    </div>
+
+                    <!-- Timer Controls -->
+                    <div class="flex items-center space-x-2">
+                        <div class="text-xs font-mono bg-slate-900 text-emerald-400 px-2 py-1 rounded font-bold" id="timer-display">
+                            20:00
+                        </div>
+                        <button id="timer-btn" onclick="toggleTimer()" class="text-xs text-slate-600 hover:text-slate-900 px-1.5 py-1">
+                            <i class="fa-solid fa-play" id="timer-icon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Textarea -->
+                <textarea 
+                    id="writing-input" 
+                    placeholder="Tuliskan jawaban Anda di sini dalam bahasa Jerman, atau klik tombol 'Uji Coba Cepat' di atas untuk memuat contoh instan..." 
+                    class="w-full flex-grow min-h-[260px] p-3 text-sm text-slate-800 bg-slate-50/50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none resize-y transition font-normal leading-relaxed custom-scrollbar"
+                    oninput="handleInput()"
+                ></textarea>
+
+                <!-- Words Progress Bar -->
+                <div>
+                    <div class="flex justify-between text-[11px] text-slate-400 mb-1">
+                        <span>Panjang Teks</span>
+                        <span id="progress-percent">0% dari target</span>
+                    </div>
+                    <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                        <div id="word-progress-bar" class="bg-indigo-500 h-full w-0 transition-all duration-300"></div>
+                    </div>
+                </div>
+
+                <!-- AI Evaluation Button Bar -->
+                <div class="pt-2 flex items-center justify-between">
+                    <div class="text-xs text-slate-400 flex items-center gap-1">
+                        <i class="fa-solid fa-bolt text-amber-500"></i>
+                        <span>Evaluasi Otomatis via Gemini AI</span>
+                    </div>
+                    <button 
+                        id="analyze-btn" 
+                        onclick="analyzeWriting()" 
+                        class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs sm:text-sm px-5 py-2.5 rounded-lg shadow transition flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        <i class="fa-solid fa-microchip"></i>
+                        <span>Periksa & Evaluasi AI</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Interactive Quiz Card (Hidden by default) -->
+            <div id="quiz-card" class="hidden bg-white rounded-xl shadow-sm border border-slate-200 p-5 space-y-4">
+                <div class="border-b border-slate-100 pb-3 flex justify-between items-center">
+                    <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                        <i class="fa-solid fa-circle-question text-amber-500"></i>
+                        <span>Latihan Cepat Struktur & Konnektoren B1</span>
+                    </h3>
+                    <span id="quiz-score-badge" class="bg-amber-100 text-amber-900 text-xs font-bold px-2.5 py-0.5 rounded-full">Skor Quiz: 0</span>
+                </div>
+
+                <div id="quiz-question-box" class="space-y-3">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Right Column: AI Feedback & Redemittel Drawer (5 Cols) -->
+        <section class="lg:col-span-5 flex flex-col space-y-5">
+            
+            <!-- Feedback Panel Card -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex flex-col h-full min-h-[500px]">
+                
+                <!-- Feedback Header -->
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
+                    <h2 class="font-bold text-slate-800 text-sm sm:text-base flex items-center gap-2">
+                        <i class="fa-solid fa-square-check text-indigo-600"></i>
+                        <span>Hasil Koreksi & Evaluasi</span>
+                    </h2>
+                    <span id="evaluation-status-badge" class="text-[11px] bg-slate-100 text-slate-500 font-medium px-2 py-0.5 rounded-full">
+                        Siap Mengevaluasi
+                    </span>
+                </div>
+
+                <!-- Feedback Tabs -->
+                <div class="flex border-b border-slate-200 text-xs mb-4">
+                    <button id="f-tab-korrektur" onclick="switchFeedbackTab('korrektur')" class="py-2 px-3 border-b-2 border-indigo-600 font-semibold text-indigo-600 flex items-center gap-1.5">
+                        <i class="fa-solid fa-pen-ruler"></i> Korrektur
+                    </button>
+                    <button id="f-tab-wortschatz" onclick="switchFeedbackTab('wortschatz')" class="py-2 px-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700 font-medium flex items-center gap-1.5">
+                        <i class="fa-solid fa-lightbulb"></i> Wortschatz B1
+                    </button>
+                    <button id="f-tab-leitpunkte" onclick="switchFeedbackTab('leitpunkte')" class="py-2 px-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700 font-medium flex items-center gap-1.5">
+                        <i class="fa-solid fa-list-check"></i> Leitpunkte
+                    </button>
+                    <button id="f-tab-bewertung" onclick="switchFeedbackTab('bewertung')" class="py-2 px-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700 font-medium flex items-center gap-1.5">
+                        <i class="fa-solid fa-award"></i> Skor B1
+                    </button>
+                </div>
+
+                <!-- Loading Spinner State -->
+                <div id="ai-loading" class="hidden flex-grow flex flex-col items-center justify-center py-12 text-center space-y-3">
+                    <div class="w-10 h-10 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+                    <p class="text-xs text-slate-500 font-medium">Penguji AI sedang mengevaluasi tata bahasa, kosa kata, dan kelengkapan poin B1 Anda...</p>
+                </div>
+
+                <!-- Initial Empty State -->
+                <div id="ai-empty-state" class="flex-grow flex flex-col items-center justify-center py-12 text-center text-slate-400 space-y-3">
+                    <div class="w-12 h-12 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-file-signature"></i>
+                    </div>
+                    <p class="text-xs max-w-xs">Tuliskan jawaban Anda di sebelah kiri, lalu klik tombol <strong class="text-slate-600">Periksa & Evaluasi AI</strong> untuk analisis tata bahasa dan skor Goethe B1.</p>
+                </div>
+
+                <!-- Feedback Content Container -->
+                <div id="ai-feedback-content" class="hidden flex-grow overflow-y-auto custom-scrollbar pr-1 space-y-4 text-xs">
+                    
+                    <!-- TAB 1: Korrektur & Grammatik -->
+                    <div id="content-korrektur" class="space-y-3">
+                        <div id="errors-list" class="space-y-2.5">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- TAB 2: Wortschatz B1 Upgrade -->
+                    <div id="content-wortschatz" class="hidden space-y-3">
+                        <p class="text-slate-500 text-[11px]">Saran kosa kata dan kata hubung (*Konnektoren*) untuk meningkatkan bobot nilai B1:</p>
+                        <div id="vocab-list" class="space-y-2">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- TAB 3: Leitpunkte Check -->
+                    <div id="content-leitpunkte" class="hidden space-y-3">
+                        <div id="points-check-list" class="space-y-2">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- TAB 4: Goethe B1 Score -->
+                    <div id="content-bewertung" class="hidden space-y-4">
+                        <div class="bg-indigo-50 border border-indigo-100 rounded-lg p-3 text-center space-y-1">
+                            <div class="text-[11px] text-indigo-700 font-semibold uppercase tracking-wider">Estimasi Status B1 Goethe</div>
+                            <div id="score-total" class="text-2xl font-bold text-indigo-900">-/10</div>
+                            <div id="score-status-badge" class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold">
+                                -
+                            </div>
+                        </div>
+
+                        <!-- Criteria Breakdown Grid -->
+                        <div class="grid grid-cols-2 gap-2 text-[11px]">
+                            <div class="bg-slate-50 p-2.5 rounded border border-slate-200">
+                                <div class="text-slate-500">Inhalt (Isi Poin)</div>
+                                <div id="score-inhalt" class="font-bold text-slate-800 text-sm">-/2.5</div>
+                            </div>
+                            <div class="bg-slate-50 p-2.5 rounded border border-slate-200">
+                                <div class="text-slate-500">Kohärenz (Alur/Struktur)</div>
+                                <div id="score-kohaerenz" class="font-bold text-slate-800 text-sm">-/2.5</div>
+                            </div>
+                            <div class="bg-slate-50 p-2.5 rounded border border-slate-200">
+                                <div class="text-slate-500">Wortschatz (Kosa Kata)</div>
+                                <div id="score-wortschatz" class="font-bold text-slate-800 text-sm">-/2.5</div>
+                            </div>
+                            <div class="bg-slate-50 p-2.5 rounded border border-slate-200">
+                                <div class="text-slate-500">Strukturen (Grammatik)</div>
+                                <div id="score-grammatik" class="font-bold text-slate-800 text-sm">-/2.5</div>
+                            </div>
+                        </div>
+
+                        <!-- Overall Feedback Text -->
+                        <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-1">
+                            <div class="font-semibold text-slate-700">Ulasan Penguji:</div>
+                            <p id="overall-feedback-text" class="text-slate-600 leading-relaxed">
+                                -
+                            </p>
+                        </div>
+
+                        <!-- Improved Model Text -->
+                        <div class="bg-emerald-50 p-3 rounded-lg border border-emerald-200 space-y-2">
+                            <div class="font-semibold text-emerald-800 flex items-center justify-between">
+                                <span>Versi Perbaikan Ideal B1:</span>
+                                <div class="flex items-center space-x-2">
+                                    <button id="tts-btn" onclick="playGermanTTS()" class="text-[11px] bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-0.5 rounded flex items-center gap-1 transition">
+                                        <i class="fa-solid fa-volume-high" id="tts-icon"></i>
+                                        <span>Dengarkan Audio</span>
+                                    </button>
+                                    <button onclick="copyImprovedText()" class="text-[11px] text-emerald-700 hover:text-emerald-900 underline">
+                                        <i class="fa-regular fa-copy"></i> Salin
+                                    </button>
+                                </div>
+                            </div>
+                            <p id="improved-version-text" class="text-emerald-900 font-mono text-[11px] leading-relaxed whitespace-pre-wrap">
+                                -
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- B1 Redemittel Cheat Sheet Modal -->
+    <div id="redemittel-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[85vh] flex flex-col overflow-hidden border border-slate-200">
+            <!-- Modal Header -->
+            <div class="px-5 py-4 bg-indigo-900 text-white flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-book-bookmark text-amber-300"></i>
+                    <h3 class="font-bold text-base">B1 Schreiben Redemittel Sammlungen</h3>
+                </div>
+                <button onclick="toggleRedemittelModal()" class="text-indigo-200 hover:text-white text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Modal Body Tabs & List -->
+            <div class="p-5 overflow-y-auto custom-scrollbar space-y-4 text-xs">
+                <!-- Teil 1 Redemittel -->
+                <div class="space-y-2">
+                    <h4 class="font-bold text-indigo-900 text-sm border-b border-slate-200 pb-1">Teil 1: Informelle E-Mail (Teman / Keluarga)</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div class="bg-slate-50 p-2.5 rounded border border-slate-200">
+                            <div class="font-semibold text-slate-700 mb-1">Anrede (Salam Pembuka):</div>
+                            <ul class="space-y-1">
+                                <li><button onclick="insertPhrase('Lieber Alex, ')" class="text-left text-indigo-600 hover:underline">Lieber [Name], (untuk pria)</button></li>
+                                <li><button onclick="insertPhrase('Liebe Maria, ')" class="text-left text-indigo-600 hover:underline">Liebe [Name], (untuk wanita)</button></li>
+                            </ul>
+                        </div>
+                        <div class="bg-slate-50 p-2.5 rounded border border-slate-200">
+                            <div class="font-semibold text-slate-700 mb-1">Dank & Einleitung:</div>
+                            <ul class="space-y-1">
+                                <li><button onclick="insertPhrase('wie geht es dir? Ich hoffe, alles ist gut. ')" class="text-left text-indigo-600 hover:underline">Wie geht es dir? Ich hoffe...</button></li>
+                                <li><button onclick="insertPhrase('danke für deine E-Mail. Ich schreibe dir, weil... ')" class="text-left text-indigo-600 hover:underline">Danke für deine E-Mail. Ich...</button></li>
+                            </ul>
+                        </div>
+                        <div class="bg-slate-50 p-2.5 rounded border border-slate-200">
+                            <div class="font-semibold text-slate-700 mb-1">Grund / Beschreibung:</div>
+                            <ul class="space-y-1">
+                                <li><button onclick="insertPhrase('Stell dir vor, was passiert ist! ')" class="text-left text-indigo-600 hover:underline">Stell dir vor, was passiert ist!</button></li>
+                                <li><button onclick="insertPhrase('Ich wollte dir erzählen, dass... ')" class="text-left text-indigo-600 hover:underline">Ich wollte dir erzählen, dass...</button></li>
+                            </ul>
+                        </div>
+                        <div class="bg-slate-50 p-2.5 rounded border border-slate-200">
+                            <div class="font-semibold text-slate-700 mb-1">Vorschlag & Gruß:</div>
+                            <ul class="space-y-1">
+                                <li><button onclick="insertPhrase('Wie wäre es, wenn wir uns am Wochenenden treffen? ')" class="text-left text-indigo-600 hover:underline">Wie wäre es, wenn wir...</button></li>
+                                <li><button onclick="insertPhrase('Schreib mir bald! Viele Grüße, ')" class="text-left text-indigo-600 hover:underline">Schreib mir bald! Viele Grüße,</button></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Teil 2 Redemittel -->
+                <div class="space-y-2 pt-2">
+                    <h4 class="font-bold text-indigo-900 text-sm border-b border-slate-200 pb-1">Teil 2: Meinungsäußerung (Forum / Diskusi)</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div class="bg-slate-50 p-2.5 rounded border border-slate-200">
+                            <div class="font-semibold text-slate-700 mb-1">Meinung ausdrücken:</div>
+                            <ul class="space-y-1">
+                                <li><button onclick="insertPhrase('Ich bin der Meinung, dass... ')" class="text-left text-indigo-600 hover:underline">Ich bin der Meinung, dass...</button></li>
+                                <li><button onclick="insertPhrase('Meiner Meinung nach ist... ')" class="text-left text-indigo-600 hover:underline">Meiner Meinung nach ist...</button></li>
+                            </ul>
+                        </div>
+                        <div class="bg-slate-50 p-2.5 rounded border border-slate-200">
+                            <div class="font-semibold text-slate-700 mb-1">Begründung & Argumente:</div>
+                            <ul class="space-y-1">
+                                <li><button onclick="insertPhrase('Ein wichtiger Grund dafür ist, dass... ')" class="text-left text-indigo-600 hover:underline">Ein wichtiger Grund ist, dass...</button></li>
+                                <li><button onclick="insertPhrase('Einerseits..., andererseits... ')" class="text-left text-indigo-600 hover:underline">Einerseits..., andererseits...</button></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Teil 3 Redemittel -->
+                <div class="space-y-2 pt-2">
+                    <h4 class="font-bold text-indigo-900 text-sm border-b border-slate-200 pb-1">Teil 3: Formelle Mitteilung (Dozent / Chef)</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div class="bg-slate-50 p-2.5 rounded border border-slate-200">
+                            <div class="font-semibold text-slate-700 mb-1">Formelle Anrede:</div>
+                            <ul class="space-y-1">
+                                <li><button onclick="insertPhrase('Sehr geehrter Herr Müller, ')" class="text-left text-indigo-600 hover:underline">Sehr geehrter Herr [Name],</button></li>
+                                <li><button onclick="insertPhrase('Sehr geehrte Frau Schneider, ')" class="text-left text-indigo-600 hover:underline">Sehr geehrte Frau [Name],</button></li>
+                            </ul>
+                        </div>
+                        <div class="bg-slate-50 p-2.5 rounded border border-slate-200">
+                            <div class="font-semibold text-slate-700 mb-1">Entschuldigung & Bitte:</div>
+                            <ul class="space-y-1">
+                                <li><button onclick="insertPhrase('Ich schreibe Ihnen, weil ich leider nicht kommen kann. ')" class="text-left text-indigo-600 hover:underline">Ich schreibe Ihnen, weil...</button></li>
+                                <li><button onclick="insertPhrase('Ich bitte Sie um Verständnis. Mit freundlichen Grüßen, ')" class="text-left text-indigo-600 hover:underline">Ich bitte um Verständnis...</button></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="px-5 py-3 bg-slate-50 border-t border-slate-200 flex justify-end">
+                <button onclick="toggleRedemittelModal()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium rounded-lg text-xs transition">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Demo Draft Texts for Instant Testing
+        const DEMO_TEXTS = {
+            1: {
+                draft: "Hallo Alex, wie geht es dir? Ich hatte Geburtstag letzte Woche und viele Leute kommt zu meiner Party. Wir haben viel Musik gehoert und gegessen. Schade, dass du nicht kommen kannst, weil du krank warst. Ich habe ein schones Geschenk von meine Eltern bekommen. Hast du Zeit am Samstag? Wir konnen zusammen Kaffee trinken und sprechen. Tschuss, Maria.",
+                perfect: "Lieber Alex,\n\nwie geht es dir? Ich hoffe, dass du dich schon besser fühlst. Letzte Woche habe ich meinen Geburtstag gefeiert und die Party war wirklich toll! Viele Freunde sind gekommen und wir haben bis spät in die Nacht getanzt.\n\nIch habe mich sehr über deine liebe Nachricht gefreut. Es war natürlich schade, dass du nicht dabei sein konntest, aber die Gesundheit geht vor.\n\nWie wäre es, wenn wir uns am nächsten Wochenende im Café treffen? Dann kann ich dir alles erzählen.\n\nViele Grüße\nMaria"
+            },
+            2: {
+                draft: "Ich finde Handy in der Schule sehr schlecht. Viele Schuler spielen Spiele im Unterricht und hoeren nicht auf Lehrer. Das ist ein grosses Problem. Aber manchmal Handy ist gut fur Suchen in Internet. Meiner Meinung nach, man muss Handy in Schule verbieten. Was denkt ihr?",
+                perfect: "Ich möchte mich auch an der Diskussion zum Thema 'Handyverbot an Schulen' beteiligen. Ich bin der Meinung, dass Smartphones im Unterricht meistens ablenken, weil viele Schüler lieber Spiele spielen oder chatten. Einerseits bieten Handys die Möglichkeit, schnell Informationen im Internet zu recherchieren. Andererseits stören die ständigen Benachrichtigungen die Konzentration. Deshalb halte ich ein klares Handyverbot während der Schulstunden für sinnvoll."
+            },
+            3: {
+                draft: "Sehr geehrter Herr Muller, ich kann morgen leider nicht zum Deutschkurs kommen. Ich habe ein Arzttermin um 10 Uhr. Koennen Sie mir bitte die Hausaufgaben schicken? Danke schon. Mit freundlichen Gruessen, Hans.",
+                perfect: "Sehr geehrter Herr Müller,\n\nich schreibe Ihnen, weil ich morgen leider nicht am Deutschkurs teilnehmen kann. Ich habe einen wichtigen Arzttermin, den ich nicht verschieben konnte.\n\nKönnten Sie mir bitte mitteilen, welche Hausaufgaben wir machen sollen? Ich bitte Sie um Verständnis.\n\nMit freundlichen Grüßen\nHans Schmidt"
+            }
+        };
+
+        // Interactive Redemittel Quiz Questions
+        const QUIZ_QUESTIONS = [
+            {
+                q: "Lengkapi kalimat pendapat B1 berikut: 'Meiner Meinung nach _____ Smartphones im Unterricht sehr nützlich.'",
+                options: ["sind", "ist", "sein", "werden"],
+                answer: 0,
+                explanation: "Kata kerja 'sind' terletak di posisi ke-2 setelah frasa 'Meiner Meinung nach'."
+            },
+            {
+                q: "Manakah ucapan penutup yang tepat untuk E-Mail informel (Teil 1)?",
+                options: ["Mit freundlichen Grüßen", "Sehr geehrte Damen und Herren", "Viele Grüße", "Ich bitte um Verständnis"],
+                answer: 2,
+                explanation: "'Viele Grüße' digunakan untuk email ke teman/keluarga."
+            },
+            {
+                q: "Struktur konnektor B1 'weil': 'Ich kann nicht kommen, weil ich krank _____.'",
+                options: ["bin", "ist", "war", "habe"],
+                answer: 0,
+                explanation: "Angebundener Nebensatz mit 'weil' meletakkan kata kerja berkonjugasi (bin) di paling akhir."
+            }
+        ];
+
+        let currentQuizIndex = 0;
+        let quizScore = 0;
+
+        // Load Demo Text into Editor instantly
+        function loadDemoText(type) {
+            const text = DEMO_TEXTS[currentTeil]?.[type] || "";
+            const input = document.getElementById('writing-input');
+            input.value = text;
+            handleInput();
+
+            // Highlight button feedback
+            const toastMsg = type === 'draft' ? "Teks berkesalahan dimuat! Klik 'Periksa & Evaluasi AI' untuk menguji koreksi." : "Teks ideal B1 dimuat! Klik 'Periksa & Evaluasi AI' untuk melihat estimasi skor tinggi.";
+            
+            // Auto click evaluate for fast experience option
+            alert(`✅ ${toastMsg}`);
+        }
+
+        // Toggle Practice Mode (Writing vs Interactive Quiz)
+        function togglePracticeMode() {
+            const quizCard = document.getElementById('quiz-card');
+            const editorCard = document.getElementById('editor-card');
+            const taskCard = document.getElementById('task-card');
+            const demoBox = document.getElementById('quick-demo-box');
+            const quizBanner = document.getElementById('quiz-banner');
+
+            const isQuizHidden = quizCard.classList.contains('hidden');
+            if (isQuizHidden) {
+                quizCard.classList.remove('hidden');
+                quizBanner.classList.remove('hidden');
+                editorCard.classList.add('hidden');
+                taskCard.classList.add('hidden');
+                demoBox.classList.add('hidden');
+                renderQuizQuestion();
+            } else {
+                quizCard.classList.add('hidden');
+                quizBanner.classList.add('hidden');
+                editorCard.classList.remove('hidden');
+                taskCard.classList.remove('hidden');
+                demoBox.classList.remove('hidden');
+            }
+        }
+
+        // Render Current Quiz Question
+        function renderQuizQuestion() {
+            const qBox = document.getElementById('quiz-question-box');
+            const currentQ = QUIZ_QUESTIONS[currentQuizIndex];
+
+            let html = `
+                <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 space-y-3">
+                    <div class="font-medium text-slate-800 text-sm">Soal ${currentQuizIndex + 1} dari ${QUIZ_QUESTIONS.length}:</div>
+                    <p class="text-slate-900 font-semibold text-sm">${escapeHtml(currentQ.q)}</p>
+                    <div class="grid grid-cols-1 gap-2 pt-2">
+            `;
+
+            currentQ.options.forEach((opt, idx) => {
+                html += `
+                    <button onclick="checkQuizAnswer(${idx})" class="text-left bg-white hover:bg-indigo-50 border border-slate-200 hover:border-indigo-300 p-2.5 rounded-lg text-xs font-medium text-slate-700 transition">
+                        ${String.fromCharCode(65 + idx)}. ${escapeHtml(opt)}
+                    </button>
+                `;
+            });
+
+            html += `</div></div>`;
+            qBox.innerHTML = html;
+        }
+
+        // Check Answer for Quiz
+        function checkQuizAnswer(selectedIdx) {
+            const q = QUIZ_QUESTIONS[currentQuizIndex];
+            const qBox = document.getElementById('quiz-question-box');
+            
+            const isCorrect = selectedIdx === q.answer;
+            if (isCorrect) quizScore += 10;
+
+            document.getElementById('quiz-score-badge').textContent = `Skor Quiz: ${quizScore}`;
+
+            qBox.innerHTML = `
+                <div class="${isCorrect ? 'bg-emerald-50 border-emerald-200 text-emerald-900' : 'bg-rose-50 border-rose-200 text-rose-900'} p-4 rounded-lg border space-y-2">
+                    <div class="font-bold flex items-center gap-1.5 text-sm">
+                        <i class="fa-solid ${isCorrect ? 'fa-circle-check text-emerald-600' : 'fa-circle-xmark text-rose-600'}"></i>
+                        <span>${isCorrect ? 'Jawaban Benar! 🎉' : 'Jawaban Belum Tepat'}</span>
+                    </div>
+                    <p class="text-xs">${escapeHtml(q.explanation)}</p>
+                    <button onclick="nextQuizQuestion()" class="mt-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-3 py-1.5 rounded-lg font-semibold transition">
+                        ${currentQuizIndex < QUIZ_QUESTIONS.length - 1 ? 'Soal Berikutnya' : 'Ulangi Quiz'}
+                    </button>
+                </div>
+            `;
+        }
+
+        function nextQuizQuestion() {
+            currentQuizIndex = (currentQuizIndex + 1) % QUIZ_QUESTIONS.length;
+            renderQuizQuestion();
+        }
+
+        // Play Audio using Gemini TTS API with browser fallback
+        async function playGermanTTS() {
+            const text = document.getElementById('improved-version-text').textContent.trim();
+            if (!text || text === '-') return;
+
+            const ttsBtn = document.getElementById('tts-btn');
+            const ttsIcon = document.getElementById('tts-icon');
+            ttsBtn.disabled = true;
+            ttsIcon.className = 'fa-solid fa-spinner animate-spin';
+
+            const apiKey = "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+
+            const payload = {
+                contents: [{
+                    parts: [{ text: `Sprechen Sie diesen deutschen Text klar und deutlich aus: ${text}` }]
+                }],
+                generationConfig: {
+                    responseModalities: ["AUDIO"],
+                    speechConfig: {
+                        voiceConfig: {
+                            prebuiltVoiceConfig: { voiceName: "Kore" }
+                        }
+                    }
+                }
+            };
+
+            try {
+                let res = await fetchWithBackoff(apiUrl, payload);
+                let result = await res.json();
+                const part = result?.candidates?.[0]?.content?.parts?.[0];
+                
+                if (part?.inlineData?.data && part?.inlineData?.mimeType) {
+                    const sampleRate = parseInt(part.inlineData.mimeType.match(/rate=(\d+)/)?.[1] || "24000", 10);
+                    const audioBuffer = base64ToArrayBuffer(part.inlineData.data);
+                    const pcm16 = new Int16Array(audioBuffer);
+                    const wavBlob = pcmToWav(pcm16, sampleRate);
+                    const audioUrl = URL.createObjectURL(wavBlob);
+                    
+                    const audio = new Audio(audioUrl);
+                    audio.play();
+                } else {
+                    fallbackBrowserTTS(text);
+                }
+            } catch (err) {
+                console.warn("Gemini TTS gagal, menggunakan browser fallback:", err);
+                fallbackBrowserTTS(text);
+            } finally {
+                ttsBtn.disabled = false;
+                ttsIcon.className = 'fa-solid fa-volume-high';
+            }
+        }
+
+        // Fallback SpeechSynthesis for standard browser audio
+        function fallbackBrowserTTS(text) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'de-DE';
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert('Audio pelafalan tidak didukung oleh browser Anda.');
+            }
+        }
+
+        // Convert base64 string to ArrayBuffer
+        function base64ToArrayBuffer(base64) {
+            const binaryString = window.atob(base64);
+            const len = binaryString.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+
+        // Convert PCM16 Int16Array to standard WAV Blob
+        function pcmToWav(pcmData, sampleRate) {
+            const buffer = new ArrayBuffer(44 + pcmData.length * 2);
+            const view = new DataView(buffer);
+
+            // WAV header
+            writeString(view, 0, 'RIFF');
+            view.setUint32(4, 36 + pcmData.length * 2, true);
+            writeString(view, 8, 'WAVE');
+            writeString(view, 12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true); // PCM
+            view.setUint16(22, 1, true); // Mono
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, sampleRate * 2, true);
+            view.setUint16(32, 2, true);
+            view.setUint16(34, 16, true);
+            writeString(view, 36, 'data');
+            view.setUint32(40, pcmData.length * 2, true);
+
+            // Write PCM audio data
+            for (let i = 0; i < pcmData.length; i++) {
+                view.setInt16(44 + i * 2, pcmData[i], true);
+            }
+
+            return new Blob([buffer], { type: 'audio/wav' });
+        }
+
+        function writeString(view, offset, string) {
+            for (let i = 0; i < string.length; i++) {
+                view.setUint8(offset + i, string.charCodeAt(i));
+            }
+        }
+
+        // Insert Redemittel phrase at cursor position
+        function insertPhrase(phrase) {
+            const textarea = document.getElementById('writing-input');
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const text = textarea.value;
+
+            textarea.value = text.substring(0, start) + phrase + text.substring(end);
+            textarea.focus();
+            textarea.selectionStart = textarea.selectionEnd = start + phrase.length;
+            
+            handleInput();
+            toggleRedemittelModal();
+        }
+
+        // Reset Editor
+        function resetEditor() {
+            document.getElementById('writing-input').value = '';
+            handleInput();
+            
+            // Reset AI Output UI
+            document.getElementById('ai-empty-state').classList.remove('hidden');
+            document.getElementById('ai-feedback-content').classList.add('hidden');
+            document.getElementById('ai-loading').classList.add('hidden');
+            document.getElementById('evaluation-status-badge').textContent = 'Siap Mengevaluasi';
+            document.getElementById('evaluation-status-badge').className = 'text-[11px] bg-slate-100 text-slate-500 font-medium px-2 py-0.5 rounded-full';
+        }
+
+        // Timer Functions
+        function toggleTimer() {
+            if (isTimerRunning) {
+                clearInterval(timerInterval);
+                isTimerRunning = false;
+                document.getElementById('timer-icon').className = 'fa-solid fa-play';
+            } else {
+                isTimerRunning = true;
+                document.getElementById('timer-icon').className = 'fa-solid fa-pause';
+                timerInterval = setInterval(() => {
+                    if (timerSeconds > 0) {
+                        timerSeconds--;
+                        updateTimerDisplay();
+                    } else {
+                        clearInterval(timerInterval);
+                        isTimerRunning = false;
+                        document.getElementById('timer-icon').className = 'fa-solid fa-rotate-right';
+                    }
+                }, 1000);
+            }
+        }
+
+        function resetTimer(minutes) {
+            clearInterval(timerInterval);
+            isTimerRunning = false;
+            timerSeconds = minutes * 60;
+            updateTimerDisplay();
+            document.getElementById('timer-icon').className = 'fa-solid fa-play';
+        }
+
+        function updateTimerDisplay() {
+            const m = Math.floor(timerSeconds / 60);
+            const s = timerSeconds % 60;
+            document.getElementById('timer-display').textContent = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
+
+        function toggleRedemittelModal() {
+            const modal = document.getElementById('redemittel-modal');
+            modal.classList.toggle('hidden');
+        }
+
+        function switchFeedbackTab(tabKey) {
+            const tabs = ['korrektur', 'wortschatz', 'leitpunkte', 'bewertung'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`f-tab-${t}`);
+                const content = document.getElementById(`content-${t}`);
+                if (t === tabKey) {
+                    btn.className = "py-2 px-3 border-b-2 border-indigo-600 font-semibold text-indigo-600 flex items-center gap-1.5";
+                    content.classList.remove('hidden');
+                } else {
+                    btn.className = "py-2 px-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700 font-medium flex items-center gap-1.5";
+                    content.classList.add('hidden');
+                }
+            });
+        }
+
+        // Call Gemini API to analyze writing
+        async function analyzeWriting() {
+            const userText = document.getElementById('writing-input').value.trim();
+            if (!userText) {
+                alert('Silakan tuliskan teks bahasa Jerman Anda terlebih dahulu!');
+                return;
+            }
+
+            // UI Loading state
+            document.getElementById('ai-empty-state').classList.add('hidden');
+            document.getElementById('ai-feedback-content').classList.add('hidden');
+            document.getElementById('ai-loading').classList.remove('hidden');
+            document.getElementById('analyze-btn').disabled = true;
+
+            const apiKey = ""; // Canvas runtime environment automatically inserts API key
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+            const systemInstruction = `Anda adalah penguji resmi ujian Goethe-Zertifikat B1 modul Schreiben (Bahasa Jerman). 
+Tugas Anda adalah memeriksa teks karangan siswa berdasarkan standar resmi Goethe B1 (Inhalt, Kohärenz, Wortschatz, Grammatik/Strukturen).
+Gunakan Bahasa Indonesia yang ramah dan edukatif dalam penjelasan koreksi.`;
+
+            const promptText = `
+Evaluasi teks penulisan B1 Jerman berikut.
+- Teil: ${currentTeil}
+- Soal/Tugas: ${currentTask.prompt}
+- Poin Wajib (Leitpunkte): ${currentTask.points.join(' | ')}
+- Teks Siswa:
+"${userText}"
+
+Analisalah kesalahan gramatis, ejaan, penggunaan kosa kata B1, serta kelengkapan poin.
+Beri balasan dalam format JSON sesuai schema.`;
+
+            const payload = {
+                contents: [{ parts: [{ text: promptText }] }],
+                systemInstruction: { parts: [{ text: systemInstruction }] },
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "OBJECT",
+                        properties: {
+                            errors: {
+                                type: "ARRAY",
+                                items: {
+                                    type: "OBJECT",
+                                    properties: {
+                                        originalText: { type: "STRING" },
+                                        correction: { type: "STRING" },
+                                        type: { type: "STRING", description: "Grammatik | Wortstellung | Rechtschreibung | Wortschatz" },
+                                        explanation: { type: "STRING" }
+                                    },
+                                    required: ["originalText", "correction", "type", "explanation"]
+                                }
+                            },
+                            vocabularyUpgrades: {
+                                type: "ARRAY",
+                                items: {
+                                    type: "OBJECT",
+                                    properties: {
+                                        original: { type: "STRING" },
+                                        suggestion: { type: "STRING" },
+                                        reason: { type: "STRING" }
+                                    },
+                                    required: ["original", "suggestion", "reason"]
+                                }
+                            },
+                            pointsCheck: {
+                                type: "ARRAY",
+                                items: {
+                                    type: "OBJECT",
+                                    properties: {
+                                        point: { type: "STRING" },
+                                        covered: { type: "BOOLEAN" },
+                                        feedback: { type: "STRING" }
+                                    },
+                                    required: ["point", "covered", "feedback"]
+                                }
+                            },
+                            score: {
+                                type: "OBJECT",
+                                properties: {
+                                    inhalt: { type: "NUMBER" },
+                                    kohaerenz: { type: "NUMBER" },
+                                    wortschatz: { type: "NUMBER" },
+                                    grammatik: { type: "NUMBER" },
+                                    total: { type: "NUMBER" },
+                                    passed: { type: "BOOLEAN" }
+                                },
+                                required: ["inhalt", "kohaerenz", "wortschatz", "grammatik", "total", "passed"]
+                            },
+                            overallFeedback: { type: "STRING" },
+                            improvedVersion: { type: "STRING" }
+                        },
+                        required: ["errors", "vocabularyUpgrades", "pointsCheck", "score", "overallFeedback", "improvedVersion"]
+                    }
+                }
+            };
+
+            // Call API with exponential backoff
+            try {
+                let response = await fetchWithBackoff(apiUrl, payload);
+                let result = await response.json();
+                
+                if (result.candidates && result.candidates[0]?.content?.parts[0]?.text) {
+                    const jsonStr = result.candidates[0].content.parts[0].text;
+                    evaluationData = JSON.parse(jsonStr);
+                    renderEvaluationResults(evaluationData);
+                } else {
+                    throw new Error('Respon AI tidak valid.');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Gagal mengevaluasi karangan. Silakan coba beberapa saat lagi.');
+                document.getElementById('ai-empty-state').classList.remove('hidden');
+            } finally {
+                document.getElementById('ai-loading').classList.add('hidden');
+                document.getElementById('analyze-btn').disabled = false;
+            }
+        }
+
+        // Fetch wrapper with Exponential Backoff
+        async function fetchWithBackoff(url, payload, maxRetries = 3) {
+            let delay = 1000;
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    let res = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (res.ok) return res;
+                } catch (e) {
+                    if (i === maxRetries - 1) throw e;
+                }
+                await new Promise(r => setTimeout(r, delay));
+                delay *= 2;
+            }
+            return fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+        }
+
+        // Render evaluation results to UI
+        function renderEvaluationResults(data) {
+            document.getElementById('ai-feedback-content').classList.remove('hidden');
+
+            // Update Badge
+            const badge = document.getElementById('evaluation-status-badge');
+            if (data.score.passed) {
+                badge.textContent = 'Lulus B1 🎉';
+                badge.className = 'text-[11px] bg-emerald-100 text-emerald-800 font-bold px-2.5 py-0.5 rounded-full';
+            } else {
+                badge.textContent = 'Belum Memenuhi';
+                badge.className = 'text-[11px] bg-amber-100 text-amber-800 font-bold px-2.5 py-0.5 rounded-full';
+            }
+
+            // 1. Errors List (Korrektur)
+            const errorsContainer = document.getElementById('errors-list');
+            errorsContainer.innerHTML = '';
+            if (data.errors && data.errors.length > 0) {
+                data.errors.forEach(err => {
+                    const card = document.createElement('div');
+                    card.className = 'bg-rose-50/70 border border-rose-200 rounded-lg p-2.5 space-y-1';
+                    card.innerHTML = `
+                        <div class="flex items-center justify-between">
+                            <span class="font-bold text-rose-800 text-[10px] uppercase bg-rose-100 px-1.5 py-0.5 rounded">${err.type}</span>
+                        </div>
+                        <div class="text-rose-900 font-medium line-through opacity-80">${escapeHtml(err.originalText)}</div>
+                        <div class="text-emerald-700 font-bold"><i class="fa-solid fa-arrow-right text-[10px] mr-1"></i>${escapeHtml(err.correction)}</div>
+                        <p class="text-slate-600 text-[11px] pt-0.5">${escapeHtml(err.explanation)}</p>
+                    `;
+                    errorsContainer.appendChild(card);
+                });
+            } else {
+                errorsContainer.innerHTML = `
+                    <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-3 text-emerald-800 font-medium text-center">
+                        <i class="fa-solid fa-circle-check text-emerald-600 mr-1"></i> Tidak ditemukan kesalahan tata bahasa utama! Karangan Anda sangat rapi.
+                    </div>
+                `;
+            }
+
+            // 2. Vocabulary Upgrades
+            const vocabContainer = document.getElementById('vocab-list');
+            vocabContainer.innerHTML = '';
+            if (data.vocabularyUpgrades && data.vocabularyUpgrades.length > 0) {
+                data.vocabularyUpgrades.forEach(v => {
+                    const card = document.createElement('div');
+                    card.className = 'bg-slate-50 border border-slate-200 rounded-lg p-2.5 space-y-1';
+                    card.innerHTML = `
+                        <div class="flex items-center justify-between text-[11px]">
+                            <span class="text-slate-500">Kata asli: <strong class="text-slate-700">${escapeHtml(v.original)}</strong></span>
+                            <span class="text-indigo-600 font-bold bg-indigo-50 border border-indigo-100 px-1.5 py-0.5 rounded">Rekomendasi B1</span>
+                        </div>
+                        <div class="text-indigo-900 font-bold text-xs"><i class="fa-solid fa-sparkles text-amber-500 mr-1"></i>${escapeHtml(v.suggestion)}</div>
+                        <p class="text-slate-600 text-[11px]">${escapeHtml(v.reason)}</p>
+                    `;
+                    vocabContainer.appendChild(card);
+                });
+            } else {
+                vocabContainer.innerHTML = `<div class="text-slate-400 text-center py-4">Kosa kata Anda sudah cukup beragam untuk level B1.</div>`;
+            }
+
+            // 3. Points Check
+            const pointsContainer = document.getElementById('points-check-list');
+            pointsContainer.innerHTML = '';
+            if (data.pointsCheck && data.pointsCheck.length > 0) {
+                data.pointsCheck.forEach(p => {
+                    const card = document.createElement('div');
+                    const isOk = p.covered;
+                    card.className = `${isOk ? 'bg-emerald-50/60 border-emerald-200' : 'bg-amber-50/60 border-amber-200'} border rounded-lg p-2.5 space-y-1`;
+                    card.innerHTML = `
+                        <div class="flex items-center space-x-2 font-semibold ${isOk ? 'text-emerald-800' : 'text-amber-800'}">
+                            <i class="fa-solid ${isOk ? 'fa-circle-check text-emerald-600' : 'fa-triangle-exclamation text-amber-600'}"></i>
+                            <span>${escapeHtml(p.point)}</span>
+                        </div>
+                        <p class="text-slate-600 text-[11px] pl-5">${escapeHtml(p.feedback)}</p>
+                    `;
+                    pointsContainer.appendChild(card);
+                });
+            }
+
+            // 4. Score Breakdown
+            document.getElementById('score-total').textContent = `${data.score.total}/10`;
+            const passBadge = document.getElementById('score-status-badge');
+            if (data.score.passed) {
+                passBadge.textContent = 'PASS (LULUS B1)';
+                passBadge.className = 'inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-600 text-white';
+            } else {
+                passBadge.textContent = 'NEED IMPROVEMENT';
+                passBadge.className = 'inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500 text-white';
+            }
+
+            document.getElementById('score-inhalt').textContent = `${data.score.inhalt}/2.5`;
+            document.getElementById('score-kohaerenz').textContent = `${data.score.kohaerenz}/2.5`;
+            document.getElementById('score-wortschatz').textContent = `${data.score.wortschatz}/2.5`;
+            document.getElementById('score-grammatik').textContent = `${data.score.grammatik}/2.5`;
+
+            document.getElementById('overall-feedback-text').textContent = data.overallFeedback;
+            document.getElementById('improved-version-text').textContent = data.improvedVersion;
+
+            // Switch to Korrektur tab by default
+            switchFeedbackTab('korrektur');
+        }
+
+        // Generate Custom Prompt with AI
+        async function generateCustomTask() {
+            const apiKey = "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+            const promptText = `Buatkan 1 soal baru standar latihan Goethe-Zertifikat B1 Schreiben untuk Teil ${currentTeil} dalam Bahasa Jerman beserta terjemahan ringkas poin dalam bahasa Jerman.
+Balas dalam format JSON:
+{
+  "title": "Judul Singkat",
+  "prompt": "Deskripsi Soal / Situasi",
+  "points": ["Poin 1", "Poin 2", "Poin 3"],
+  "targetWords": ${currentTeil === 3 ? 30 : 80},
+  "timeMinutes": ${currentTeil === 1 ? 20 : (currentTeil === 2 ? 25 : 15)}
+}`;
+
+            try {
+                let res = await fetchWithBackoff(apiUrl, {
+                    contents: [{ parts: [{ text: promptText }] }],
+                    generationConfig: { responseMimeType: "application/json" }
+                });
+                let result = await res.json();
+                let newTask = JSON.parse(result.candidates[0].content.parts[0].text);
+                
+                PRESET_TASKS[currentTeil].push(newTask);
+                
+                // Add to select
+                const selectEl = document.getElementById('task-select');
+                const opt = document.createElement('option');
+                opt.value = PRESET_TASKS[currentTeil].length - 1;
+                opt.textContent = `✨ ${newTask.title}`;
+                selectEl.appendChild(opt);
+                selectEl.value = opt.value;
+
+                currentTask = newTask;
+                renderTask();
+            } catch (e) {
+                console.error(e);
+                alert('Gagal membuat soal baru. Menggunakan soal bawaan.');
+            }
+        }
+
+        // Copy Improved Text
+        function copyImprovedText() {
+            const text = document.getElementById('improved-version-text').textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Model teks perbaikan berhasil disalin!');
+            });
+        }
+
+        // Helper to escape HTML characters
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, "&amp;")
+                      .replace(/</g, "&lt;")
+                      .replace(/>/g, "&gt;")
+                      .replace(/"/g, "&quot;")
+                      .replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>
