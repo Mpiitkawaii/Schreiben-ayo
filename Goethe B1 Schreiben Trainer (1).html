@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goethe-Zertifikat B1 Schreiben Trainer & Live Correction</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        goethe: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        },
+                        accent: {
+                            500: '#10b981',
+                            600: '#059669',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .highlight-err {
+            background-color: #fef2f2;
+            border-bottom: 2px dashed #ef4444;
+            color: #991b1b;
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+        .highlight-good {
+            background-color: #f0fdf4;
+            border-bottom: 2px solid #22c55e;
+            color: #166534;
+            padding: 0 2px;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+
+    <!-- Navigation Header -->
+    <header class="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-30 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center font-bold text-xl text-white shadow-lg shadow-sky-500/20">
+                    B1
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight flex items-center gap-2">
+                        Goethe B1 Schreiben Trainer
+                        <span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs px-2 py-0.5 rounded-full font-medium">Live AI Corrector</span>
+                    </h1>
+                    <p class="text-xs text-slate-400">Persiapan Praktis Goethe-Zertifikat B1 Modul Schreiben</p>
+                </div>
+            </div>
+
+            <!-- Header Actions -->
+            <div class="flex items-center gap-2">
+                <button id="redemittelBtn" onclick="toggleModal('redemittelModal')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs sm:text-sm px-3 py-2 rounded-lg font-medium transition flex items-center gap-2 border border-slate-700">
+                    <i class="fa-solid fa-book-open text-sky-400"></i>
+                    <span>Redemittel B1</span>
+                </button>
+                <button id="apiKeyBtn" onclick="toggleModal('apiModal')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs sm:text-sm px-3 py-2 rounded-lg font-medium transition flex items-center gap-2 border border-slate-700">
+                    <i class="fa-solid fa-key text-amber-400"></i>
+                    <span class="hidden sm:inline">Pengaturan API</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main App Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- Sidebar / Topic Navigation (4 Cols on LG) -->
+        <aside class="lg:col-span-4 flex flex-col gap-4">
+            
+            <!-- Module Selection Tabs -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-2 flex gap-1">
+                <button onclick="switchTeil(1)" id="tab-t1" class="flex-1 py-2 text-center text-xs sm:text-sm font-semibold rounded-lg transition text-slate-600 hover:bg-slate-100">
+                    Teil 1 <span class="text-[10px] block font-normal text-slate-500">Informell (~80w)</span>
+                </button>
+                <button onclick="switchTeil(2)" id="tab-t2" class="flex-1 py-2 text-center text-xs sm:text-sm font-semibold rounded-lg transition text-slate-600 hover:bg-slate-100">
+                    Teil 2 <span class="text-[10px] block font-normal text-slate-500">Meinung (~80w)</span>
+                </button>
+                <button onclick="switchTeil(3)" id="tab-t3" class="flex-1 py-2 text-center text-xs sm:text-sm font-semibold rounded-lg transition text-slate-600 hover:bg-slate-100">
+                    Teil 3 <span class="text-[10px] block font-normal text-slate-500">Formell (~30w)</span>
+                </button>
+            </div>
+
+            <!-- Topic List Container -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex-1 flex flex-col">
+                <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-100">
+                    <h2 class="font-bold text-slate-800 text-sm flex items-center gap-2" id="teilTitleHeader">
+                        <i class="fa-solid fa-list-check text-sky-600"></i>
+                        Pilih Tema Ujian
+                    </h2>
+                    <span id="teilBadge" class="text-xs bg-sky-100 text-sky-800 px-2 py-0.5 rounded-full font-medium">Teil 1</span>
+                </div>
+
+                <!-- Topic Items -->
+                <div id="topicList" class="space-y-2 overflow-y-auto max-h-[220px] lg:max-h-[380px] pr-1">
+                    <!-- Dynamic rendering via JS -->
+                </div>
+
+                <!-- Target Guidelines Summary -->
+                <div class="mt-4 pt-3 border-t border-slate-100 bg-slate-50 p-3 rounded-lg text-xs space-y-1 text-slate-600">
+                    <div class="flex justify-between font-medium text-slate-700">
+                        <span><i class="fa-regular fa-clock text-amber-500 mr-1"></i> Target Waktu:</span>
+                        <span id="targetTime" class="font-semibold text-slate-900">±20 Menit</span>
+                    </div>
+                    <div class="flex justify-between font-medium text-slate-700">
+                        <span><i class="fa-solid fa-file-word text-blue-500 mr-1"></i> Target Kata:</span>
+                        <span id="targetWords" class="font-semibold text-slate-900">±80 Kata</span>
+                    </div>
+                    <div class="flex justify-between font-medium text-slate-700">
+                        <span><i class="fa-solid fa-user-tag text-emerald-500 mr-1"></i> Bentuk Kata Sapaan:</span>
+                        <span id="targetForm" class="font-semibold text-slate-900">Du-Form (Informal)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Prompt Detail Card -->
+            <div class="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-xl shadow-sm p-4 text-xs space-y-3">
+                <div class="flex items-center justify-between">
+                    <span class="font-semibold text-sky-400 uppercase tracking-wider text-[10px]">Detail Tugas Ujian</span>
+                    <button onclick="toggleSampleAnswer()" class="text-emerald-400 hover:text-emerald-300 font-medium underline flex items-center gap-1 text-[11px]">
+                        <i class="fa-solid fa-lightbulb"></i> Lihat Contoh Jawaban
+                    </button>
+                </div>
+                <div id="promptDescription" class="text-slate-200 leading-relaxed space-y-2">
+                    <!-- Prompt Detail Rendered via JS -->
+                </div>
+                
+                <!-- Checklist Points -->
+                <div class="pt-2 border-t border-slate-700">
+                    <div class="font-semibold text-slate-300 mb-1">Poin yang Wajib Ditulis (Inhaltspunkte):</div>
+                    <ul id="promptChecklist" class="space-y-1.5">
+                        <!-- Points Rendered via JS -->
+                    </ul>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Writing & Analysis Area (8 Cols on LG) -->
+        <section class="lg:col-span-8 flex flex-col gap-4">
+            
+            <!-- Editor Box -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col overflow-hidden">
+                <!-- Editor Toolbar -->
+                <div class="bg-slate-50 border-b border-slate-200 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex items-center gap-3">
+                        <span class="font-bold text-slate-700 text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-pen-to-square text-sky-600"></i>
+                            Lembar Ketik
+                        </span>
+                        <!-- Live Check Toggle -->
+                        <label class="inline-flex items-center cursor-pointer text-xs text-slate-600 font-medium">
+                            <input type="checkbox" id="autoCheckToggle" class="sr-only peer" checked>
+                            <div class="relative w-8 h-4 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-emerald-500"></div>
+                            <span class="ms-2">Koreksi Otomatis</span>
+                        </label>
+                    </div>
+
+                    <!-- Live Word Counter & Stats -->
+                    <div class="flex items-center gap-4 text-xs font-medium text-slate-600">
+                        <span id="wordCountBadge" class="bg-slate-200 text-slate-800 px-2.5 py-1 rounded-md font-semibold">
+                            0 kata
+                        </span>
+                        <span id="salutationDetector" class="text-amber-600 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                            Salam: Belum terdeteksi
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Textarea -->
+                <div class="relative flex-1">
+                    <textarea 
+                        id="editorTextarea" 
+                        class="w-full h-64 sm:h-72 p-4 text-slate-800 text-base sm:text-base leading-relaxed focus:outline-none resize-y font-sans placeholder-slate-400"
+                        placeholder="Tuliskan teks jawaban bahasa Jerman B1 Anda di sini... (Contoh: Hallo Lieber Paul, wie geht es dir?...)"
+                    ></textarea>
+                </div>
+
+                <!-- Action Footer -->
+                <div class="bg-slate-50 border-t border-slate-200 p-3 flex flex-wrap items-center justify-between gap-3">
+                    <div class="text-xs text-slate-500 flex items-center gap-2">
+                        <i class="fa-solid fa-circle-info text-sky-500"></i>
+                        <span>Ketuk "Analisis Teks" untuk review komprehensif tata bahasa & Wortschatz B1.</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="clearText()" class="px-3 py-1.5 text-xs text-slate-600 hover:text-slate-900 hover:bg-slate-200 rounded-lg transition">
+                            <i class="fa-solid fa-rotate-left mr-1"></i> Reset
+                        </button>
+                        <button id="analyzeBtn" onclick="analyzeText(true)" class="bg-sky-600 hover:bg-sky-700 active:bg-sky-800 text-white font-semibold px-4 py-2 rounded-lg text-sm transition shadow-sm flex items-center gap-2">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            <span>Analisis Teks (AI)</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Live Correction & Feedback Panel -->
+            <div id="analysisResultCard" class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 space-y-4">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                    <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+                        <i class="fa-solid fa-square-poll-vertical text-emerald-600"></i>
+                        Hasil Evaluasi Ujian & Koreksi Live
+                    </h3>
+                    <div id="aiStatusBadge" class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-medium flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-slate-400"></span>
+                        Menunggu Teks...
+                    </div>
+                </div>
+
+                <!-- Score Overview Bar -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div class="bg-slate-50 p-3 rounded-lg border border-slate-100 text-center">
+                        <span class="text-[11px] text-slate-500 font-medium uppercase tracking-wider block">Est. Skor B1</span>
+                        <span id="scoreDisplay" class="text-2xl font-extrabold text-slate-800">- / 10</span>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-lg border border-slate-100 text-center">
+                        <span class="text-[11px] text-slate-500 font-medium uppercase tracking-wider block">Peluang Lulus (B1)</span>
+                        <span id="passLikelihoodDisplay" class="text-sm font-bold text-slate-700 block mt-1">-</span>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-lg border border-slate-100 text-center">
+                        <span class="text-[11px] text-slate-500 font-medium uppercase tracking-wider block">Status Jumlah Kata</span>
+                        <span id="wordStatusDisplay" class="text-xs font-semibold text-slate-700 block mt-1">-</span>
+                    </div>
+                </div>
+
+                <!-- Detailed Analysis Sections -->
+                <div class="space-y-4">
+                    
+                    <!-- Task Completion (Kriterien) -->
+                    <div>
+                        <h4 class="font-bold text-slate-800 text-xs uppercase tracking-wider text-slate-500 mb-2 flex items-center gap-1.5">
+                            <i class="fa-solid fa-list-check text-sky-500"></i> Kelengkapan Poin Soal (Inhalt)
+                        </h4>
+                        <div id="taskCompletionList" class="space-y-1 text-xs text-slate-600">
+                            <p class="text-slate-400 italic">Mulai mengetik untuk melihat analisis poin soal...</p>
+                        </div>
+                    </div>
+
+                    <!-- Corrections & Grammar -->
+                    <div>
+                        <h4 class="font-bold text-slate-800 text-xs uppercase tracking-wider text-slate-500 mb-2 flex items-center gap-1.5">
+                            <i class="fa-solid fa-triangle-exclamation text-amber-500"></i> Koreksi Tata Bahasa & Ejaan
+                        </h4>
+                        <div id="grammarCorrectionsBox" class="bg-slate-50 border border-slate-200 rounded-lg p-3 text-xs space-y-2 min-h-[60px]">
+                            <p class="text-slate-400 italic">Belum ada koreksi grammar.</p>
+                        </div>
+                    </div>
+
+                    <!-- Better B1 Vocabulary & Connectors -->
+                    <div>
+                        <h4 class="font-bold text-slate-800 text-xs uppercase tracking-wider text-slate-500 mb-2 flex items-center gap-1.5">
+                            <i class="fa-solid fa-award text-purple-500"></i> Rekomendasi Wortschatz & Redemittel B1
+                        </h4>
+                        <div id="redemittelFeedbackBox" class="bg-purple-50/50 border border-purple-100 rounded-lg p-3 text-xs text-purple-900 space-y-1">
+                            <p class="text-slate-400 italic">Saran konnektoren dan variasi kata akan muncul di sini.</p>
+                        </div>
+                    </div>
+
+                    <!-- Optimized Sample Version -->
+                    <div>
+                        <h4 class="font-bold text-slate-800 text-xs uppercase tracking-wider text-slate-500 mb-2 flex items-center gap-1.5">
+                            <i class="fa-solid fa-wand-magic text-emerald-500"></i> Versi Perbaikan B1 (Mustertext)
+                        </h4>
+                        <div id="improvedTextDisplay" class="bg-slate-900 text-slate-100 rounded-lg p-3 text-xs leading-relaxed font-mono whitespace-pre-wrap min-h-[60px]">
+                            <span class="text-slate-500 font-sans italic">Teks versi perbaikan akan dirumuskan di sini setelah analisis...</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- MODAL 1: Redemittel Cheat Sheet -->
+    <div id="redemittelModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl shadow-xl max-w-3xl w-full max-h-[85vh] flex flex-col overflow-hidden">
+            <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between border-b border-slate-800">
+                <h3 class="font-bold text-lg flex items-center gap-2">
+                    <i class="fa-solid fa-book-bookmark text-sky-400"></i>
+                    B1 Schreiben Redemittel (Ungkapan Penting)
+                </h3>
+                <button onclick="toggleModal('redemittelModal')" class="text-slate-400 hover:text-white transition">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto space-y-6 text-sm">
+                
+                <!-- Teil 1 -->
+                <div class="space-y-2">
+                    <h4 class="font-bold text-sky-700 border-b pb-1 border-sky-100 flex items-center gap-2">
+                        <span class="bg-sky-100 text-sky-800 text-xs px-2 py-0.5 rounded">Teil 1</span> Informelle E-Mail
+                    </h4>
+                    <div class="grid sm:grid-cols-2 gap-3 text-xs">
+                        <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                            <strong class="block font-semibold text-slate-800 mb-1">Anrede (Salam Pembuka):</strong>
+                            <p class="text-slate-600">• Lieber [Nama Pria], / Liebe [Nama Wanita],</p>
+                            <p class="text-slate-600">• Hallo [Nama],</p>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                            <strong class="block font-semibold text-slate-800 mb-1">Dank & Einleitung (Awal):</strong>
+                            <p class="text-slate-600">• Wie geht es dir? Mir geht es gut.</p>
+                            <p class="text-slate-600">• Danke für deine E-Mail.</p>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                            <strong class="block font-semibold text-slate-800 mb-1">Begründung & Vorschlag:</strong>
+                            <p class="text-slate-600">• Ich konnte nicht kommen, weil...</p>
+                            <p class="text-slate-600">• Wie wäre es, wenn wir am Samstag...?</p>
+                            <p class="text-slate-600">• Hast du Zeit/Lust, am...?</p>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                            <strong class="block font-semibold text-slate-800 mb-1">Gruß (Penutup):</strong>
+                            <p class="text-slate-600">• Schreib mir bald!</p>
+                            <p class="text-slate-600">• Viele Grüße / Liebe Grüße,</p>
+                            <p class="text-slate-600">• Dein [Nama kamu] / Deine [Nama kamu]</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Teil 2 -->
+                <div class="space-y-2">
+                    <h4 class="font-bold text-emerald-700 border-b pb-1 border-emerald-100 flex items-center gap-2">
+                        <span class="bg-emerald-100 text-emerald-800 text-xs px-2 py-0.5 rounded">Teil 2</span> Meinungsäußerung (Forum)
+                    </h4>
+                    <div class="grid sm:grid-cols-2 gap-3 text-xs">
+                        <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                            <strong class="block font-semibold text-slate-800 mb-1">Eigene Meinung (Pendapat):</strong>
+                            <p class="text-slate-600">• Ich bin der Meinung, dass...</p>
+                            <p class="text-slate-600">• Meiner Meinung nach ist...</p>
+                            <p class="text-slate-600">• Ich finde das Thema sehr wichtig, weil...</p>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                            <strong class="block font-semibold text-slate-800 mb-1">Gründe & Beispiele (Alasan):</strong>
+                            <p class="text-slate-600">• Ein großer Vorteil / Nachteil ist, dass...</p>
+                            <p class="text-slate-600">• Zum Beispiel...</p>
+                            <p class="text-slate-600">• Einerseits..., andererseits...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Teil 3 -->
+                <div class="space-y-2">
+                    <h4 class="font-bold text-indigo-700 border-b pb-1 border-indigo-100 flex items-center gap-2">
+                        <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-0.5 rounded">Teil 3</span> Formelle Mitteilung
+                    </h4>
+                    <div class="grid sm:grid-cols-2 gap-3 text-xs">
+                        <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                            <strong class="block font-semibold text-slate-800 mb-1">Anrede (Formil):</strong>
+                            <p class="text-slate-600">• Sehr geehrte Frau [Nama],</p>
+                            <p class="text-slate-600">• Sehr geehrter Herr [Nama],</p>
+                            <p class="text-slate-600">• Sehr geehrte Damen und Herren,</p>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                            <strong class="block font-semibold text-slate-800 mb-1">Grund & Bitte (Alasan & Permintaan):</strong>
+                            <p class="text-slate-600">• Ich schreibe Ihnen, weil ich leider...</p>
+                            <p class="text-slate-600">• Ich möchte mich dafür entschuldigen, dass...</p>
+                            <p class="text-slate-600">• Könnten wir bitte einen neuen Termin vereinbaren?</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="bg-slate-100 px-6 py-3 border-t border-slate-200 text-right">
+                <button onclick="toggleModal('redemittelModal')" class="bg-slate-800 text-white text-xs px-4 py-2 rounded-lg font-medium hover:bg-slate-700">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: Sample Answer Modal -->
+    <div id="sampleModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[85vh] flex flex-col overflow-hidden">
+            <div class="bg-emerald-800 text-white px-6 py-4 flex items-center justify-between">
+                <h3 class="font-bold text-base flex items-center gap-2">
+                    <i class="fa-solid fa-lightbulb text-amber-300"></i>
+                    Contoh Jawaban Standar Goethe B1 (Musterantwort)
+                </h3>
+                <button onclick="toggleModal('sampleModal')" class="text-emerald-200 hover:text-white transition">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto space-y-4">
+                <div class="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-900">
+                    <strong>Catatan Ujian:</strong> Gunakan contoh ini sebagai referensi struktur, alur cerita, dan penggunaan konnektoren B1.
+                </div>
+                <div id="sampleContent" class="bg-slate-900 text-emerald-300 font-mono p-4 rounded-xl text-xs sm:text-sm leading-relaxed whitespace-pre-wrap">
+                    <!-- Sample text loaded dynamically -->
+                </div>
+            </div>
+            <div class="bg-slate-100 px-6 py-3 border-t border-slate-200 flex justify-between items-center">
+                <button onclick="copySampleToEditor()" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-3 py-1.5 rounded-lg transition flex items-center gap-1.5">
+                    <i class="fa-regular fa-copy"></i> Salin ke Editor
+                </button>
+                <button onclick="toggleModal('sampleModal')" class="bg-slate-800 text-white text-xs px-4 py-2 rounded-lg font-medium hover:bg-slate-700">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: API Key Config -->
+    <div id="apiModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 space-y-4">
+            <div class="flex items-center justify-between border-b pb-3">
+                <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+                    <i class="fa-solid fa-key text-amber-500"></i> Pengaturan API Key Gemini
+                </h3>
+                <button onclick="toggleModal('apiModal')" class="text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            <p class="text-xs text-slate-600 leading-relaxed">
+                Aplikasi ini secara otomatis menggunakan API Key bawaan Canvas runtime. Namun, jika Anda ingin menggunakan API key Anda sendiri dari Google AI Studio, Anda dapat memasukkannya di bawah ini.
+            </p>
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Gemini API Key (Opsional)</label>
+                <input type="password" id="customApiKeyInput" placeholder="AIzaSy..." class="w-full text-xs p-2.5 border border-slate-300 rounded-lg focus:outline-none focus:border-sky-500">
+            </div>
+            <div class="flex justify-end gap-2 pt-2">
+                <button onclick="toggleModal('apiModal')" class="px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-100 rounded-lg">Batal</button>
+                <button onclick="saveApiKey()" class="px-4 py-1.5 text-xs bg-sky-600 text-white font-semibold rounded-lg hover:bg-sky-700">Simpan API Key</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const GOETHE_PROMPTS = {
+            1: [
+                {
+                    id: 't1_1',
+                    title: '1. Umzug in eine neue Wohnung',
+                    situation: 'Sie sind vor Kurzem in eine neue Wohnung umgezogen und haben eine Einweihungsparty gemacht. Ein/e Freund/in von Ihnen konnte leider nicht kommen.',
+                    promptText: 'Schreiben Sie Ihrem/Ihrer Freund/in eine E-Mail:\n• Beschreiben Sie Ihre neue Wohnung.\n• Begründen Sie, warum die Party gut/schön war.\n• Machen Sie einen Vorschlag für ein Treffen bei Ihnen.',
+                    checklist: [
+                        'Beschreiben Sie Ihre neue Wohnung (Ukuran, lokasi, kamar).',
+                        'Begründen Sie, warum die Party gut war (Suasana, makanan, musik).',
+                        'Machen Sie einen Vorschlag für ein Treffen bei Ihnen (Mengajak bertemu).'
+                    ],
+                    targetWords: 80,
+                    targetTime: '±20 Menit',
+                    form: 'Du-Form (Informell)',
+                    sample: `Lieber Michael,
+
+wie geht es dir? Ich hoffe, dir geht es gut! Schade, dass du nicht zu meiner Einweihungsparty kommen konntest. 
+
+Meine neue Wohnung ist wirklich sehr schön und hell. Sie hat drei Zimmer, einen großen Balkon und liegt direkt im Stadtzentrum. Die Party war super! Viele Freunde waren da, wir haben leckere Pizza gegessen und bis spät in die Nacht Musik gehört und getanzt. Die Stimmung war wirklich fantastisch.
+
+Hast du am nächsten Samstag Zeit? Ich möchte dich sehr gerne zu mir einladen, damit du meine Wohnung sehen kannst. Wir könnten zusammen kochen!
+
+Schreib mir bald!
+Viele Grüße
+Dein Stefan`
+                },
+                {
+                    id: 't1_2',
+                    title: '2. Eine verpasste Geburtstagsfeier',
+                    situation: 'Sie hatten letzte Woche Geburtstag und haben eine Party gefeiert. Ihr/e Freund/in konnte nicht kommen, weil er/sie krank war.',
+                    promptText: 'Schreiben Sie Ihrem/Ihrer Freund/in eine E-Mail:\n• Drücken Sie Ihr Bedauern aus, dass Ihr/e Freund/in nicht dabei war.\n• Erzählen Sie, was auf der Party passiert ist und welches Geschenk Sie bekommen haben.\n• Schlagen Sie einen Termin vor, um sich bald zu treffen.',
+                    checklist: [
+                        'Drücken Sie Ihr Bedauern aus (Ungkapan empati/sayang tidak bisa hadir).',
+                        'Erzählen Sie, was passiert ist & Geschenk (Cerita pesta & hadiah).',
+                        'Schlagen Sie einen Termin vor (Usul jadwal bertemu).'
+                    ],
+                    targetWords: 80,
+                    targetTime: '±20 Menit',
+                    form: 'Du-Form (Informell)',
+                    sample: `Liebe Anna,
+
+danke für deine Nachricht. Es tut mir sehr leid, dass du krank warst und nicht zu meiner Geburtstagsfeier kommen konntest. Ich hoffe, es geht dir schon wieder besser!
+
+Die Party war toll. Wir haben im Garten gegrillt und viel gelacht. Meine Eltern haben mir ein neues Fahrrad geschenkt, darüber habe ich mich riesig gefreut! 
+
+Können wir uns nächste Woche am Donnerstag treffen? Ich möchte dir gerne die Fotos von der Party zeigen.
+
+Gute Besserung und liebe Grüße
+Deine Sarah`
+                },
+                {
+                    id: 't1_3',
+                    title: '3. Ein Ausflug am Wochenende',
+                    situation: 'Sie haben am vergangenen Wochenende einen Ausflug gemacht und möchten Ihrem/Ihrer Freund/in davon erzählen.',
+                    promptText: 'Schreiben Sie Ihrem/Ihrer Freund/in eine E-Mail:\n• Erzählen Sie, wohin Sie gefahren sind und was Sie dort gemacht haben.\n• Beschreiben Sie, was Ihnen am besten gefallen hat und warum.\n• Laden Sie Ihren/Ihre Freund/in zum nächsten Ausflug ein.',
+                    checklist: [
+                        'Erzählen Sie, wohin Sie gefahren sind (Tujuan & aktivitas).',
+                        'Beschreiben Sie, was am besten gefallen hat (Bagian paling favorit & alasan).',
+                        'Laden Sie zum nächsten Ausflug ein (Ajak jalan-jalan berikutnya).'
+                    ],
+                    targetWords: 80,
+                    targetTime: '±20 Menit',
+                    form: 'Du-Form (Informell)',
+                    sample: `Lieber Markus,
+
+letztes Wochenende habe ich einen Ausflug zum Bodensee gemacht. Das Wetter war wunderschön und sehr sonnig. Wir sind um den See gefahren und haben ein Picknick gemacht.
+
+Am besten hat mir die Bootsfahrt gefallen, weil die Aussicht auf die Berge einfach spektakulär war. Ich habe sehr viele schöne Fotos gemacht!
+
+Nächsten Monat möchte ich wieder einen Ausflug machen, diesmal in die Berge. Hast du Lust mitzukommen? Das würde mich sehr freuen!
+
+Melde dich bald!
+Liebe Grüße
+Dein Tim`
+                }
+            ],
+            2: [
+                {
+                    id: 't2_1',
+                    title: '1. Einkaufen im Internet vs. im Geschäft',
+                    situation: 'Sie haben im Fernsehen eine Diskussion zum Thema "Online-Shopping" gesehen. Im Online-Gästebuch der Sendung finden Sie folgende Meinung:\n"Ich kaufe fast alles online. Es ist einfach, schnell und oft günstiger als im Laden. Man spart sehr viel Zeit." — Laura (24)',
+                    promptText: 'Schreiben Sie Ihre Meinung zu diesem Thema (ca. 80 Wörter).',
+                    checklist: [
+                        'Sagen Sie Ihre eigene Meinung zu Online-Shopping.',
+                        'Nennen Sie Vor- und Nachteile (Alasan & contoh).',
+                        'Keine Anrede / Kein Gruß erforderlich (Langsung ke tema forum).'
+                    ],
+                    targetWords: 80,
+                    targetTime: '±25 Menit',
+                    form: 'Forumseintrag (Neutral/Keine Anrede)',
+                    sample: `Ich finde dieses Thema sehr aktuell und interessant. Ich bin der gleichen Meinung wie Laura. Online-Shopping hat viele Vorteile: Man kann ganz einfach von zu Hause aus einkaufen und Produkte vergleichen, was sehr viel Zeit spart. 
+
+Einerseits ist es bequem, andererseits kaufe ich Kleidung lieber im Geschäft, weil man die Sachen vor dem Kauf anprobieren kann. Außerdem ist es schade für die kleinen Geschäfte in der Stadt. Zusammenfassend denke ich, dass man die richtige Balance finden muss.`
+                },
+                {
+                    id: 't2_2',
+                    title: '2. Handyverbot an Schulen',
+                    situation: 'In einem Blog lesen Sie einen Beitrag zum Thema "Soll man Smartphones in der Schule verbieten?":\n"Smartphones lenken die Schüler im Unterricht nur ab. Sie spielen oder chatten, anstatt dem Lehrer zuzuhören. Ein Verbot ist notwendig." — Markus (38)',
+                    promptText: 'Schreiben Sie Ihre Meinung zu diesem Thema (ca. 80 Wörter).',
+                    checklist: [
+                        'Äußern Sie Ihre Meinung zum Handyverbot in Schulen.',
+                        'Begründen Sie Ihre Haltung mit Beispielen.',
+                        'Keine formelle Anrede erforderlich.'
+                    ],
+                    targetWords: 80,
+                    targetTime: '±25 Menit',
+                    form: 'Forumseintrag (Neutral/Keine Anrede)',
+                    sample: `Das Thema Smartphone-Verbot an Schulen wird heutzutage oft diskutiert. Ich verstehe die Meinung von Markus, aber ich sehe das etwas anders. 
+
+Einerseits stimmen die Nachteile: Smartphones können im Unterricht wirklich ablenken, wenn Schüler Spiele spielen. Andererseits sind Handys heutzutage wichtige Lernwerkzeuge. Man kann schnell Wörter im Wörterbuch nachschlagen oder Informationen für Präsentationen suchen. Meiner Meinung nach ist ein komplettes Verbot nicht sinnvoll, aber klare Regeln während des Unterrichts sind notwendig.`
+                },
+                {
+                    id: 't2_3',
+                    title: '3. Umweltschutz im Alltag',
+                    situation: 'In einem Online-Forum lesen Sie folgenden Kommentar:\n"Jeder Mensch kann im Alltag etwas für die Umwelt tun, zum Beispiel weniger Plastik nutzen oder öfter mit dem Fahrrad fahren." — Sarah (30)',
+                    promptText: 'Schreiben Sie Ihre Meinung zu diesem Thema (ca. 80 Wörter).',
+                    checklist: [
+                        'Sagen Sie Ihre Meinung zu Umweltschutz im Alltag.',
+                        'Nennen Sie praktische Beispiele aus Ihrem eigenen Leben.',
+                        'Diskutieren Sie Wichtigkeit & Machbarkeit.'
+                    ],
+                    targetWords: 80,
+                    targetTime: '±25 Menit',
+                    form: 'Forumseintrag (Neutral/Keine Anrede)',
+                    sample: `Ich stimme Sarah völlig zu. Umweltschutz ist eine große Aufgabe, die uns alle betrifft. Jeder kleine Schritt im Alltag ist wichtig. 
+
+Ich persönlich benutze beim Einkaufen immer Stoffbeutel und versuche, Produkte mit wenig Plastikverpackung zu kaufen. Außerdem fahre ich zur Arbeit meistens mit dem Bus oder dem Fahrrad, anstatt das Auto zu nehmen. Wenn alle Menschen kleine Dinge verändern, können wir zusammen viel für unseren Planeten erreichen.`
+                }
+            ],
+            3: [
+                {
+                    id: 't3_1',
+                    title: '1. Absage einer Einladung / Termin beim Chef',
+                    situation: 'Ihr Chef, Herr Müller, hat Sie zu einem Treffen am morgigen Tag eingeladen. Sie können aber wegen eines dringenden Termins nicht kommen.',
+                    promptText: 'Schreiben Sie an Herrn Müller:\n• Bedanken Sie sich für die Einladung.\n• Entschuldigen Sie sich, dass Sie nicht kommen können, und nennen Sie den Grund.\n• Bitten Sie um einen neuen Termin.',
+                    checklist: [
+                        'Bedanken Sie sich für die Einladung (Terima kasih).',
+                        'Entschuldigen Sie sich mit Grund (Alasan batal/halangan).',
+                        'Bitten Sie um einen neuen Termin (Minta jadwal baru).'
+                    ],
+                    targetWords: 30,
+                    targetTime: '±15 Menit',
+                    form: 'Sie-Form (Formell)',
+                    sample: `Sehr geehrter Herr Müller,
+
+vielen Dank für die Einladung zum Treffen morgen. Leider kann ich nicht kommen, da ich einen dringenden Arzttermin habe. Ich bitte um Entschuldigung. Könnten wir bitte einen neuen Termin vereinbaren?
+
+Mit freundlichen Grüßen
+Maria Santos`
+                },
+                {
+                    id: 't3_2',
+                    title: '2. Krankmeldung im Sprachkurs',
+                    situation: 'Sie besuchen einen Deutschkurs. Sie sind krank geworden und können heute nicht zum Unterricht kommen.',
+                    promptText: 'Schreiben Sie Ihrer Deutschlehrerin, Frau Schneider:\n• Grund für das Schreiben nennen (Erkrankung).\n• Um Nachholmaterial / Hausaufgaben bitten.\n• Sich höflich entschuldigen.',
+                    checklist: [
+                        'Nennen Sie die Erkrankung als Grund (Izin sakit).',
+                        'Bitten Sie um Hausaufgaben/Material (Minta tugas/materi).',
+                        'Sich höflich entschuldigen & Grüße (Minta maaf).'
+                    ],
+                    targetWords: 30,
+                    targetTime: '±15 Menit',
+                    form: 'Sie-Form (Formell)',
+                    sample: `Sehr geehrte Frau Schneider,
+
+leider bin ich heute krank geworden und kann nicht zum Deutschkurs kommen. Könnten Sie mir bitte die Hausaufgaben per E-Mail schicken? Ich bitte die Abwesenheit zu entschuldigen.
+
+Mit freundlichen Grüßen
+David Miller`
+                },
+                {
+                    id: 't3_3',
+                    title: '3. Verspätung wegen Stau / Anreise',
+                    situation: 'Sie haben einen Termin in einer Sprachagentur bei Frau Weber um 14:00 Uhr. Sie stehen im Stau und werden sich verspäten.',
+                    promptText: 'Schreiben Sie eine kurze E-Mail an Frau Weber:\n• Informieren Sie über die Verspätung.\n• Nennen Sie den Grund (Stau) und voraussichtliche Ankunftszeit.\n• Bitten Sie um Verständnis.',
+                    checklist: [
+                        'Informieren Sie über Verspätung (Info keterlambatan).',
+                        'Grund (Stau) & Ankunftszeit (Alasan macet & perkiraan sampai).',
+                        'Bitten Sie um Verständnis (Mohon maklum/terima kasih).'
+                    ],
+                    targetWords: 30,
+                    targetTime: '±15 Menit',
+                    form: 'Sie-Form (Formell)',
+                    sample: `Sehr geehrte Frau Weber,
+
+ich habe heute um 14:00 Uhr einen Termin bei Ihnen. Leider stehe ich im Stau und werde mich ca. 20 Minuten verspäten. Ich hoffe auf Ihr Verständnis.
+
+Mit freundlichen Grüßen
+Alex Vance`
+                }
+            ]
+        };
+
+        let currentTeil = 1;
+        let selectedTopicIndex = 0;
+        let debounceTimer = null;
+        let customApiKey = localStorage.getItem('gemini_custom_key') || '';
+
+        // DOM Element Cache
+        const editorTextarea = document.getElementById('editorTextarea');
+        const wordCountBadge = document.getElementById('wordCountBadge');
+        const salutationDetector = document.getElementById('salutationDetector');
+        const autoCheckToggle = document.getElementById('autoCheckToggle');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+
+        function initApp() {
+            if (customApiKey) {
+                document.getElementById('customApiKeyInput').value = customApiKey;
+            }
+            switchTeil(1);
+
+            // Add Listener to Editor for live stats & debounced live check
+            editorTextarea.addEventListener('input', handleEditorInput);
+        }
+
+        function switchTeil(teilNum) {
+            currentTeil = teilNum;
+            selectedTopicIndex = 0;
+
+            // Update Tabs styling
+            [1, 2, 3].forEach(t => {
+                const btn = document.getElementById(`tab-t${t}`);
+                if (t === teilNum) {
+                    btn.className = 'flex-1 py-2 text-center text-xs sm:text-sm font-semibold rounded-lg transition bg-sky-600 text-white shadow-sm';
+                } else {
+                    btn.className = 'flex-1 py-2 text-center text-xs sm:text-sm font-semibold rounded-lg transition text-slate-600 hover:bg-slate-100';
+                }
+            });
+
+            document.getElementById('teilBadge').innerText = `Teil ${teilNum}`;
+            renderTopicList();
+            loadTopicDetails();
+        }
+
+        function renderTopicList() {
+            const topicListContainer = document.getElementById('topicList');
+            topicListContainer.innerHTML = '';
+
+            const topics = GOETHE_PROMPTS[currentTeil];
+            topics.forEach((topic, idx) => {
+                const isActive = idx === selectedTopicIndex;
+                const card = document.createElement('div');
+                card.onclick = () => selectTopic(idx);
+                card.className = `p-3 rounded-lg border text-xs cursor-pointer transition flex items-start justify-between gap-2 ${
+                    isActive 
+                    ? 'bg-sky-50 border-sky-400 text-sky-900 font-semibold shadow-xs' 
+                    : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+                }`;
+                card.innerHTML = `
+                    <div class="space-y-1">
+                        <div class="font-bold">${topic.title}</div>
+                        <div class="text-[11px] text-slate-500 line-clamp-1">${topic.situation.substring(0, 60)}...</div>
+                    </div>
+                    ${isActive ? '<i class="fa-solid fa-circle-check text-sky-600 mt-0.5"></i>' : ''}
+                `;
+                topicListContainer.appendChild(card);
+            });
+        }
+
+        function selectTopic(index) {
+            selectedTopicIndex = index;
+            renderTopicList();
+            loadTopicDetails();
+        }
+
+        function loadTopicDetails() {
+            const topic = GOETHE_PROMPTS[currentTeil][selectedTopicIndex];
+            
+            // Guidelines
+            document.getElementById('targetTime').innerText = topic.targetTime;
+            document.getElementById('targetWords').innerText = `±${topic.targetWords} Kata`;
+            document.getElementById('targetForm').innerText = topic.form;
+
+            // Prompt text
+            document.getElementById('promptDescription').innerHTML = `
+                <div class="p-2 bg-slate-800/80 rounded border border-slate-700 text-slate-300 font-mono text-[11px]">
+                    ${topic.situation}
+                </div>
+                <div class="font-medium text-slate-200">
+                    ${topic.promptText.replace(/\n/g, '<br>')}
+                </div>
+            `;
+
+            // Checklist
+            const checklistEl = document.getElementById('promptChecklist');
+            checklistEl.innerHTML = '';
+            topic.checklist.forEach(item => {
+                const li = document.createElement('li');
+                li.className = 'flex items-start gap-1.5 text-slate-300';
+                li.innerHTML = `<i class="fa-solid fa-square-check text-emerald-400 mt-0.5"></i> <span>${item}</span>`;
+                checklistEl.appendChild(li);
+            });
+
+            // Trigger instant stats update
+            updateTextStats();
+        }
+
+        function handleEditorInput() {
+            updateTextStats();
+
+            // Handle live debounced AI check if enabled
+            if (autoCheckToggle.checked) {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    const text = editorTextarea.value.trim();
+                    if (text.split(/\s+/).length >= 8) {
+                        analyzeText(false); // Silent live analysis
+                    }
+                }, 2000);
+            }
+        }
+
+        function updateTextStats() {
+            const text = editorTextarea.value.trim();
+            const words = text ? text.split(/\s+/).filter(w => w.length > 0) : [];
+            const wordCount = words.length;
+
+            const topic = GOETHE_PROMPTS[currentTeil][selectedTopicIndex];
+            const target = topic.targetWords;
+
+            // Word counter badge
+            wordCountBadge.innerText = `${wordCount} / ~${target} kata`;
+            if (wordCount === 0) {
+                wordCountBadge.className = 'bg-slate-200 text-slate-800 px-2.5 py-1 rounded-md font-semibold';
+            } else if (Math.abs(wordCount - target) <= 15) {
+                wordCountBadge.className = 'bg-emerald-100 text-emerald-800 border border-emerald-300 px-2.5 py-1 rounded-md font-semibold';
+            } else {
+                wordCountBadge.className = 'bg-amber-100 text-amber-800 border border-amber-300 px-2.5 py-1 rounded-md font-semibold';
+            }
+
+            // Salutation Detector
+            const lowerText = text.toLowerCase();
+            let salutationText = "Salam: Belum Ada";
+            let salutationClass = "text-amber-600 bg-amber-50 px-2 py-0.5 rounded border border-amber-200";
+
+            if (currentTeil === 1) {
+                if (lowerText.includes('lieber') || lowerText.includes('liebe') || lowerText.includes('hallo')) {
+                    salutationText = "Salam: Du-Form OK ✓";
+                    salutationClass = "text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 font-semibold";
+                }
+            } else if (currentTeil === 2) {
+                salutationText = "Teil 2: Tanpa Anrede/Greeting";
+                salutationClass = "text-sky-700 bg-sky-50 px-2 py-0.5 rounded border border-sky-200";
+            } else if (currentTeil === 3) {
+                if (lowerText.includes('sehr geehrte') || lowerText.includes('sehr geehrter')) {
+                    salutationText = "Salam: Sie-Form OK ✓";
+                    salutationClass = "text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 font-semibold";
+                }
+            }
+
+            salutationDetector.innerText = salutationText;
+            salutationDetector.className = salutationClass;
+        }
+
+        function clearText() {
+            editorTextarea.value = '';
+            updateTextStats();
+            resetAnalysisUI();
+        }
+
+        function resetAnalysisUI() {
+            document.getElementById('aiStatusBadge').innerHTML = '<span class="w-2 h-2 rounded-full bg-slate-400"></span> Menunggu Teks...';
+            document.getElementById('scoreDisplay').innerText = '- / 10';
+            document.getElementById('passLikelihoodDisplay').innerText = '-';
+            document.getElementById('wordStatusDisplay').innerText = '-';
+            document.getElementById('taskCompletionList').innerHTML = '<p class="text-slate-400 italic">Mulai mengetik untuk melihat analisis poin soal...</p>';
+            document.getElementById('grammarCorrectionsBox').innerHTML = '<p class="text-slate-400 italic">Belum ada koreksi grammar.</p>';
+            document.getElementById('redemittelFeedbackBox').innerHTML = '<p class="text-slate-400 italic">Saran konnektoren dan variasi kata akan muncul di sini.</p>';
+            document.getElementById('improvedTextDisplay').innerText = 'Teks versi perbaikan akan dirumuskan di sini setelah analisis...';
+        }
+
+        async function analyzeText(isManualClick = true) {
+            const text = editorTextarea.value.trim();
+            if (!text) {
+                if (isManualClick) showToast('Tuliskan jawaban Anda terlebih dahulu!');
+                return;
+            }
+
+            const currentPrompt = GOETHE_PROMPTS[currentTeil][selectedTopicIndex];
+            
+            // Set Loading UI State
+            const aiStatusBadge = document.getElementById('aiStatusBadge');
+            aiStatusBadge.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-sky-600"></i> Menganalisis B1...';
+            if (isManualClick) {
+                analyzeBtn.disabled = true;
+                analyzeBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Checking...';
+            }
+
+            const apiKey = customApiKey || "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+            const systemPrompt = `You are a certified Goethe-Institut German B1 Exam Corrector.
+Your task is to evaluate a user's German B1 Schreiben attempt according to strict Goethe B1 criteria:
+1. Inhalt / Vollständigkeit (Did they cover all requirements?)
+2. Ausdrücke / Wortschatz (B1 appropriate vocabulary, connectors like weil, dass, deshalb, obwohl, etc.)
+3. Grammatik & Rechtschreibung (Grammar, verb position, word order, case endings, spelling).
+
+Provide the output strictly in valid JSON format matching the schema provided.
+Do NOT output any markdown backticks outside the JSON.
+All explanatory notes should be in Indonesian so the Indonesian user understands clearly.`;
+
+            const userQuery = `Evaluate this Goethe B1 Schreiben text:
+
+[MODUL & TEIL]: Teil ${currentTeil} (${currentPrompt.form})
+[SITUASI SOAL]: ${currentPrompt.situation}
+[TUGAS/SOAL]: ${currentPrompt.promptText}
+[KRITERIA POIN DITUNTUT]: ${JSON.stringify(currentPrompt.checklist)}
+[TARGET KATA]: ~${currentPrompt.targetWords} kata
+
+[TEKS JAWABAN SISWA]:
+"${text}"
+
+Evaluate in detail and return JSON matching this schema:
+{
+  "score": "7.5/10",
+  "passLikelihood": "Tinggi / Sedang / Perlu Perbaikan",
+  "wordCountCheck": "Cukup (82 kata / target ~80 kata)",
+  "taskPoints": [
+    { "point": "Deskripsi kriteria 1", "status": true, "note": "Catatan ringkas dalam Bahasa Indonesia" },
+    { "point": "Deskripsi kriteria 2", "status": true, "note": "Catatan ringkas" },
+    { "point": "Deskripsi kriteria 3", "status": false, "note": "Catatan ringkas jika belum terpenuhi" }
+  ],
+  "grammarErrors": [
+    {
+      "original": "potongan kalimat salah",
+      "correction": "potongan kalimat benar",
+      "explanation": "Penjelasan singkat aturan grammar B1 dalam Bahasa Indonesia"
+    }
+  ],
+  "vocabularyAndRedemittel": "Evaluasi penggunaan konnektoren B1 (weil, deshalb, dass, etc.) dan rekomendasi variasi kata B1.",
+  "improvedText": "Teks perbaikan versi B1 yang benar, natural, dan memenuhi seluruh kriteria."
+}`;
+
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] },
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "OBJECT",
+                        properties: {
+                            "score": { "type": "STRING" },
+                            "passLikelihood": { "type": "STRING" },
+                            "wordCountCheck": { "type": "STRING" },
+                            "taskPoints": {
+                                "type": "ARRAY",
+                                "items": {
+                                    "type": "OBJECT",
+                                    "properties": {
+                                        "point": { "type": "STRING" },
+                                        "status": { "type": "BOOLEAN" },
+                                        "note": { "type": "STRING" }
+                                    },
+                                    "propertyOrdering": ["point", "status", "note"]
+                                }
+                            },
+                            "grammarErrors": {
+                                "type": "ARRAY",
+                                "items": {
+                                    "type": "OBJECT",
+                                    "properties": {
+                                        "original": { "type": "STRING" },
+                                        "correction": { "type": "STRING" },
+                                        "explanation": { "type": "STRING" }
+                                    },
+                                    "propertyOrdering": ["original", "correction", "explanation"]
+                                }
+                            },
+                            "vocabularyAndRedemittel": { "type": "STRING" },
+                            "improvedText": { "type": "STRING" }
+                        },
+                        "propertyOrdering": ["score", "passLikelihood", "wordCountCheck", "taskPoints", "grammarErrors", "vocabularyAndRedemittel", "improvedText"]
+                    }
+                }
+            };
+
+            try {
+                const response = await fetchWithRetry(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                const jsonText = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                if (jsonText) {
+                    const data = JSON.parse(jsonText);
+                    renderAnalysisResult(data);
+                    aiStatusBadge.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500"></span> Koreksi Selesai';
+                } else {
+                    throw new Error("Format respons AI tidak sesuai.");
+                }
+
+            } catch (err) {
+                console.error("Gemini API Error:", err);
+                aiStatusBadge.innerHTML = '<span class="w-2 h-2 rounded-full bg-red-500"></span> Gagal Menganalisis';
+                if (isManualClick) showToast("Gagal menghubungi server AI. Silakan coba lagi.");
+            } finally {
+                if (isManualClick) {
+                    analyzeBtn.disabled = false;
+                    analyzeBtn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> <span>Analisis Teks (AI)</span>';
+                }
+            }
+        }
+
+        // Exponential backoff fetch helper
+        async function fetchWithRetry(url, options, retries = 3, backoff = 1000) {
+            try {
+                const res = await fetch(url, options);
+                if (!res.ok && res.status === 429 && retries > 0) {
+                    await new Promise(r => setTimeout(r, backoff));
+                    return fetchWithRetry(url, options, retries - 1, backoff * 2);
+                }
+                return res;
+            } catch (e) {
+                if (retries > 0) {
+                    await new Promise(r => setTimeout(r, backoff));
+                    return fetchWithRetry(url, options, retries - 1, backoff * 2);
+                }
+                throw e;
+            }
+        }
+
+        function renderAnalysisResult(data) {
+            // Scores
+            document.getElementById('scoreDisplay').innerText = data.score || '-';
+            
+            const passEl = document.getElementById('passLikelihoodDisplay');
+            passEl.innerText = data.passLikelihood || 'Normal';
+            if ((data.passLikelihood || '').toLowerCase().includes('tinggi')) {
+                passEl.className = 'text-sm font-bold text-emerald-600 block mt-1';
+            } else if ((data.passLikelihood || '').toLowerCase().includes('sedang')) {
+                passEl.className = 'text-sm font-bold text-amber-600 block mt-1';
+            } else {
+                passEl.className = 'text-sm font-bold text-rose-600 block mt-1';
+            }
+
+            document.getElementById('wordStatusDisplay').innerText = data.wordCountCheck || 'Sesuai';
+
+            // Task Points (Inhaltspunkte)
+            const taskContainer = document.getElementById('taskCompletionList');
+            taskContainer.innerHTML = '';
+            if (data.taskPoints && data.taskPoints.length > 0) {
+                data.taskPoints.forEach(p => {
+                    const div = document.createElement('div');
+                    div.className = `p-2 rounded-lg border text-xs flex items-start gap-2 ${
+                        p.status ? 'bg-emerald-50/60 border-emerald-200 text-emerald-900' : 'bg-rose-50/60 border-rose-200 text-rose-900'
+                    }`;
+                    div.innerHTML = `
+                        <i class="fa-solid ${p.status ? 'fa-circle-check text-emerald-600' : 'fa-circle-xmark text-rose-500'} mt-0.5"></i>
+                        <div>
+                            <strong class="block">${p.point}</strong>
+                            <span class="text-[11px] opacity-90">${p.note}</span>
+                        </div>
+                    `;
+                    taskContainer.appendChild(div);
+                });
+            } else {
+                taskContainer.innerHTML = '<p class="text-slate-400 italic">Semua poin kriteria terpenuhi dengan baik.</p>';
+            }
+
+            // Grammar Errors
+            const grammarBox = document.getElementById('grammarCorrectionsBox');
+            grammarBox.innerHTML = '';
+            if (data.grammarErrors && data.grammarErrors.length > 0) {
+                data.grammarErrors.forEach(err => {
+                    const item = document.createElement('div');
+                    item.className = 'border-b border-slate-200 pb-2 last:border-b-0 last:pb-0';
+                    item.innerHTML = `
+                        <div class="flex items-center gap-2 flex-wrap mb-0.5">
+                            <span class="highlight-err line-through">${err.original}</span>
+                            <i class="fa-solid fa-arrow-right text-slate-400 text-[10px]"></i>
+                            <span class="highlight-good">${err.correction}</span>
+                        </div>
+                        <p class="text-[11px] text-slate-600">${err.explanation}</p>
+                    `;
+                    grammarBox.appendChild(item);
+                });
+            } else {
+                grammarBox.innerHTML = '<div class="text-emerald-700 font-medium flex items-center gap-1.5"><i class="fa-solid fa-circle-check"></i> Tidak ditemukan kesalahan tata bahasa utama. Ausgezeichnet!</div>';
+            }
+
+            // Redemittel & Vocabulary Feedback
+            document.getElementById('redemittelFeedbackBox').innerHTML = `
+                <div class="leading-relaxed text-xs">
+                    ${data.vocabularyAndRedemittel || 'Penggunaan variasi kalimat B1 cukup baik.'}
+                </div>
+            `;
+
+            // Improved Text
+            document.getElementById('improvedTextDisplay').innerText = data.improvedText || '-';
+        }
+
+        function toggleModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.toggle('hidden');
+        }
+
+        function toggleSampleAnswer() {
+            const topic = GOETHE_PROMPTS[currentTeil][selectedTopicIndex];
+            document.getElementById('sampleContent').innerText = topic.sample;
+            toggleModal('sampleModal');
+        }
+
+        function copySampleToEditor() {
+            const topic = GOETHE_PROMPTS[currentTeil][selectedTopicIndex];
+            editorTextarea.value = topic.sample;
+            toggleModal('sampleModal');
+            updateTextStats();
+            showToast('Contoh jawaban berhasil disalin ke editor!');
+        }
+
+        function saveApiKey() {
+            const inputVal = document.getElementById('customApiKeyInput').value.trim();
+            customApiKey = inputVal;
+            localStorage.setItem('gemini_custom_key', inputVal);
+            toggleModal('apiModal');
+            showToast('API Key berhasil disimpan!');
+        }
+
+        function showToast(msg) {
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-5 right-5 bg-slate-900 text-white text-xs font-semibold px-4 py-3 rounded-xl shadow-xl z-50 flex items-center gap-2 border border-slate-700 animate-bounce';
+            toast.innerHTML = `<i class="fa-solid fa-circle-info text-sky-400"></i> ${msg}`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // Initialize App on Window Load
+        window.onload = initApp;
+    </script>
+</body>
+</html>
